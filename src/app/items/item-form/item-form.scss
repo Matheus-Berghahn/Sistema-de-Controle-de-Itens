@@ -1,0 +1,171 @@
+:host {
+  display: block;
+  padding: 24px 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+}
+
+.form-container {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+mat-card {
+  border-radius: 8px;
+  
+  mat-card-header {
+    padding: 24px 24px 16px;
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+    
+    mat-card-subtitle {
+      margin-top: 4px;
+      opacity: 0.7;
+    }
+  }
+  
+  mat-card-content {
+    padding: 0 24px 24px;
+  }
+}
+
+mat-divider {
+  margin: 0 24px;
+}
+
+mat-form-field {
+  .mat-icon {
+    opacity: 0.6;
+    margin-right: 8px;
+  }
+  
+  &.mat-form-field-appearance-outline {
+    .mat-form-field-outline {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+textarea.mat-input-element {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* ============================================
+   RESPONSIVIDADE MOBILE - FORMULÁRIO
+   ============================================ */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 12px;
+  }
+  
+  mat-card {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    
+    mat-card-header {
+      padding: 16px 16px 12px;
+      
+      mat-card-title {
+        font-size: 1.2rem;
+        
+        mat-icon {
+          font-size: 20px;
+        }
+      }
+    }
+    
+    mat-card-content {
+      padding: 0 16px 16px;
+    }
+  }
+  
+  .form-container {
+    padding: 16px 0;
+    gap: 16px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .form-field {
+    width: 100%;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  textarea.mat-input-element {
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  mat-card {
+    mat-card-header {
+      padding: 12px 12px 8px;
+    }
+    
+    mat-card-content {
+      padding: 0 12px 12px;
+    }
+  }
+  
+  .form-container {
+    gap: 12px;
+  }
+}

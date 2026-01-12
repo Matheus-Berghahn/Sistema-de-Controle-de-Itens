@@ -1,0 +1,471 @@
+:host {
+  display: block;
+  padding: 24px 0;
+}
+
+.container {
+  padding: 0 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Cabeçalho melhorado */
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 4px 0;
+  }
+  
+  .mat-caption {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+    
+    .filtro-ativo {
+      color: #ff4081;
+      font-weight: 500;
+    }
+    
+    .selecionado-ativo {
+      color: #3f51b5;
+      font-weight: 500;
+    }
+  }
+}
+
+.botoes-superiores {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+/* Filtros */
+.filtros-container {
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filtros-linha {
+  display: flex;
+  gap: 20px;
+}
+
+.filtro-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.filtros-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Expansion Panel */
+mat-expansion-panel {
+  margin-bottom: 24px;
+  border-radius: 8px !important;
+  
+  .mat-expansion-panel-header {
+    padding: 0 24px;
+    height: 64px;
+    
+    .mat-expansion-panel-header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+  }
+  
+  .mat-expansion-panel-body {
+    padding: 0 24px 16px;
+  }
+}
+
+/* Loading */
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+}
+
+/* Tabela Desktop */
+.desktop-card {
+  border-radius: 8px;
+  margin-top: 16px;
+  
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  
+  table {
+    width: 100%;
+    min-width: 900px;
+  }
+}
+
+.codigo-cell {
+  font-weight: 500;
+}
+
+.descricao-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.orgao-cell {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Checkbox na tabela */
+.mat-column-selecao {
+  width: 48px;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  
+  mat-checkbox {
+    margin: 0;
+  }
+}
+
+/* Chips coloridos */
+mat-chip {
+  font-size: 12px;
+  height: 24px;
+  
+  ::ng-deep .mat-chip-avatar {
+    height: 16px;
+    width: 16px;
+    font-size: 10px;
+  }
+}
+
+/* Linhas selecionadas */
+.mat-row {
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* Quando não há itens */
+.sem-itens {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+  gap: 16px;
+
+  .icon-large {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    opacity: 0.3;
+  }
+
+  h3, p {
+    margin: 0;
+    opacity: 0.7;
+  }
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+/* Esconder/Mostrar baseado no tamanho da tela */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Media Query para Tablet e Mobile */
+@media (max-width: 1024px) {
+  .filtros-linha {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* Media Query para Mobile */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+  
+  /* Container principal */
+  .container {
+    padding: 0 12px;
+  }
+  
+  /* Cabeçalho */
+  .header-actions {
+    flex-direction: column;
+    gap: 16px;
+    
+    h2 {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .botoes-superiores {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+    
+    .export-buttons {
+      flex-direction: column;
+      width: 100%;
+      
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* Cards Mobile */
+  .itens-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .item-card-mobile {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    mat-card-header {
+      padding: 16px 16px 8px;
+      
+      .mat-card-title-group {
+        display: flex;
+        align-items: flex-start;
+        width: 100%;
+        gap: 12px;
+      }
+      
+      .mobile-checkbox {
+        margin-top: 4px;
+      }
+      
+      .mobile-header-info {
+        flex: 1;
+      }
+      
+      .mobile-codigo {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+        line-height: 1.2;
+      }
+      
+      .mobile-chip {
+        font-size: 10px;
+        height: 20px;
+        margin-right: 6px;
+      }
+    }
+    
+    mat-card-content {
+      padding: 12px 16px;
+    }
+    
+    .mobile-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .mobile-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      
+      &:not(:last-child) {
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+    }
+    
+    .mobile-col {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+    
+    .mobile-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      color: rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
+    }
+    
+    .mobile-text {
+      flex: 1;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    
+    .descricao-mobile {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .mobile-label {
+      font-size: 0.8rem;
+      color: rgba(0, 0, 0, 0.6);
+      margin-right: 4px;
+    }
+    
+    .mobile-value {
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.9);
+    }
+    
+    mat-card-actions {
+      padding: 8px 16px 16px;
+      min-height: auto;
+      
+      button {
+        margin: 0 0 0 8px;
+      }
+    }
+  }
+  
+  /* Quando não há itens (mobile) */
+  .sem-itens {
+    padding: 32px 16px;
+    
+    .icon-large {
+      font-size: 48px;
+      height: 48px;
+      width: 48px;
+    }
+    
+    h3 {
+      font-size: 1.1rem;
+    }
+    
+    p {
+      font-size: 0.9rem;
+    }
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* Expansion Panel mobile */
+  mat-expansion-panel {
+    .mat-expansion-panel-header {
+      padding: 0 16px;
+      height: 56px;
+      
+      .mat-expansion-panel-header-title {
+        font-size: 0.9rem;
+        
+        mat-icon {
+          font-size: 20px;
+        }
+      }
+    }
+    
+    .mat-expansion-panel-body {
+      padding: 0 16px 12px;
+    }
+  }
+}
+
+/* Media Query para Telas Muito Pequenas */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 8px;
+  }
+  
+  .header-actions {
+    h2 {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .item-card-mobile {
+    mat-card-header {
+      padding: 12px 12px 8px;
+    }
+    
+    mat-card-content {
+      padding: 8px 12px;
+    }
+    
+    .mobile-row {
+      gap: 8px;
+    }
+    
+    .mobile-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+    }
+    
+    .mobile-text {
+      font-size: 0.85rem;
+    }
+  }
+}

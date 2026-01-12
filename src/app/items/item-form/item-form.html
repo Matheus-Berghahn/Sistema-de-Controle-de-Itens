@@ -1,0 +1,218 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Editar Item' : 'Cadastrar Novo Item' }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        Preencha os dados do item seguindo as normas do sistema
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <!-- Loading -->
+      <div *ngIf="carregando" class="loading-center">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="mat-body-1">{{ isEditMode ? 'Carregando item...' : 'Processando...' }}</p>
+      </div>
+
+      <!-- Formulário -->
+      <form *ngIf="!carregando" [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="form-container">
+        
+        <div class="form-row">
+          <!-- Código -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="codigo" placeholder="Ex: 2024-MAT-001">
+            <mat-icon matPrefix>code</mat-icon>
+            
+            <mat-error *ngIf="f['codigo'].hasError('required')">
+              {{ getErrorMessage('codigo') }}
+            </mat-error>
+            <mat-error *ngIf="f['codigo'].hasError('pattern')">
+              {{ getErrorMessage('codigo') }}
+            </mat-error>
+            <mat-error *ngIf="f['codigo'].hasError('maxlength')">
+              {{ getErrorMessage('codigo') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Tipo -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="tipo">
+              <mat-option *ngFor="let tipo of tipos" [value]="tipo.value">
+                {{ tipo.label }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>category</mat-icon>
+            <mat-error *ngIf="f['tipo'].hasError('required')">
+              {{ getErrorMessage('tipo') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Descrição -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="2" placeholder="Descreva o item detalhadamente"></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          
+          <mat-error *ngIf="f['descricao'].hasError('required')">
+            {{ getErrorMessage('descricao') }}
+          </mat-error>
+          <mat-error *ngIf="f['descricao'].hasError('minlength')">
+            {{ getErrorMessage('descricao') }}
+          </mat-error>
+          <mat-error *ngIf="f['descricao'].hasError('maxlength')">
+            {{ getErrorMessage('descricao') }}
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+          <!-- Valor Unitário -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Valor Unitário (R$)</mat-label>
+            <input matInput type="number" formControlName="valorUnitario" step="0.01" min="0.01">
+            <mat-icon matPrefix>attach_money</mat-icon>
+            <span matPrefix>R$&nbsp;</span>
+            
+            <mat-error *ngIf="f['valorUnitario'].hasError('required')">
+              {{ getErrorMessage('valorUnitario') }}
+            </mat-error>
+            <mat-error *ngIf="f['valorUnitario'].hasError('min')">
+              {{ getErrorMessage('valorUnitario') }}
+            </mat-error>
+            <mat-error *ngIf="f['valorUnitario'].hasError('max')">
+              {{ getErrorMessage('valorUnitario') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Quantidade -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Quantidade</mat-label>
+            <input matInput type="number" formControlName="quantidade" min="1">
+            <mat-icon matPrefix>numbers</mat-icon>
+            
+            <mat-error *ngIf="f['quantidade'].hasError('required')">
+              {{ getErrorMessage('quantidade') }}
+            </mat-error>
+            <mat-error *ngIf="f['quantidade'].hasError('min')">
+              {{ getErrorMessage('quantidade') }}
+            </mat-error>
+            <mat-error *ngIf="f['quantidade'].hasError('max')">
+              {{ getErrorMessage('quantidade') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <!-- Órgão Responsável -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Órgão Responsável</mat-label>
+            <mat-select formControlName="orgaoResponsavel">
+              <mat-option *ngFor="let orgao of orgaos" [value]="orgao">
+                {{ orgao }}
+              </mat-option>
+              <mat-option value="OUTRO">Outro</mat-option>
+            </mat-select>
+            <mat-icon matPrefix>account_balance</mat-icon>
+            
+            <mat-error *ngIf="f['orgaoResponsavel'].hasError('required')">
+              {{ getErrorMessage('orgaoResponsavel') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Exercício Fiscal -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Exercício Fiscal</mat-label>
+            <input matInput type="number" formControlName="exercicioFiscal" min="2000" max="2050">
+            <mat-icon matPrefix>calendar_today</mat-icon>
+            
+            <mat-error *ngIf="f['exercicioFiscal'].hasError('required')">
+              {{ getErrorMessage('exercicioFiscal') }}
+            </mat-error>
+            <mat-error *ngIf="f['exercicioFiscal'].hasError('min')">
+              {{ getErrorMessage('exercicioFiscal') }}
+            </mat-error>
+            <mat-error *ngIf="f['exercicioFiscal'].hasError('max')">
+              {{ getErrorMessage('exercicioFiscal') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <!-- Processo -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Processo</mat-label>
+            <input matInput formControlName="processo" placeholder="Ex: PREGÃO 001/2024">
+            <mat-icon matPrefix>gavel</mat-icon>
+            
+            <mat-error *ngIf="f['processo'].hasError('required')">
+              {{ getErrorMessage('processo') }}
+            </mat-error>
+            <mat-error *ngIf="f['processo'].hasError('pattern')">
+              {{ getErrorMessage('processo') }}
+            </mat-error>
+            <mat-error *ngIf="f['processo'].hasError('maxlength')">
+              {{ getErrorMessage('processo') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Número do Processo -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Número do Processo</mat-label>
+            <input matInput formControlName="numeroProcesso" placeholder="Opcional">
+            <mat-icon matPrefix>format_list_numbered</mat-icon>
+            
+            <mat-error *ngIf="f['numeroProcesso'].hasError('pattern')">
+              {{ getErrorMessage('numeroProcesso') }}
+            </mat-error>
+            <mat-error *ngIf="f['numeroProcesso'].hasError('maxlength')">
+              {{ getErrorMessage('numeroProcesso') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <!-- Unidade Orçamentária -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Unidade Orçamentária</mat-label>
+            <input matInput formControlName="unidadeOrcamentaria" placeholder="Opcional">
+            <mat-icon matPrefix>account_balance_wallet</mat-icon>
+            
+            <mat-error *ngIf="f['unidadeOrcamentaria'].hasError('pattern')">
+              {{ getErrorMessage('unidadeOrcamentaria') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Fonte Recurso -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Fonte de Recurso</mat-label>
+            <input matInput formControlName="fonteRecurso" placeholder="Opcional">
+            <mat-icon matPrefix>paid</mat-icon>
+            
+            <mat-error *ngIf="f['fonteRecurso'].hasError('pattern')">
+              {{ getErrorMessage('fonteRecurso') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Ações -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancelar()">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="itemForm.invalid">
+            <mat-icon>{{ isEditMode ? 'save' : 'check' }}</mat-icon>
+            {{ isEditMode ? 'Atualizar' : 'Cadastrar' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

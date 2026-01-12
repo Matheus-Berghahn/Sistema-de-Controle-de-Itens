@@ -1,0 +1,358 @@
+<div class="container">
+  <div class="header-actions">
+    <div>
+      <h2 class="mat-h2">
+        <mat-icon>list</mat-icon>
+        Itens Cadastrados
+      </h2>
+      <p class="mat-caption" *ngIf="!carregando">
+        {{ contadorFiltrado }}
+        <span *ngIf="filtrosAtivos" class="filtro-ativo">• Filtros ativos</span>
+        <span *ngIf="quantidadeSelecionada > 0" class="selecionado-ativo">
+          • {{ quantidadeSelecionada }} selecionado(s)
+        </span>
+      </p>
+    </div>
+    
+    <div class="botoes-superiores">
+      <!-- Botões de Exportação -->
+      <div class="export-buttons" *ngIf="!carregando && itensFiltrados.length > 0">
+        <button mat-stroked-button color="accent" 
+                (click)="exportarSelecionadosPDF()"
+                [disabled]="quantidadeSelecionada === 0"
+                matTooltip="Exportar itens selecionados">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Exportar Selecionados
+        </button>
+        <button mat-stroked-button color="primary" 
+                (click)="exportarTodosPDF()"
+                matTooltip="Exportar todos os itens filtrados">
+          <mat-icon>download</mat-icon>
+          Exportar Todos
+        </button>
+      </div>
+      
+      <button mat-stroked-button (click)="panelFiltrosAberto = !panelFiltrosAberto">
+        <mat-icon>filter_list</mat-icon>
+        Filtros
+      </button>
+      <button mat-raised-button color="primary" routerLink="/items/novo">
+        <mat-icon>add</mat-icon>
+        Novo Item
+      </button>
+    </div>
+  </div>
+
+  <!-- Painel de Filtros -->
+  <mat-accordion>
+    <mat-expansion-panel [(expanded)]="panelFiltrosAberto">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>tune</mat-icon>
+          Filtros Avançados
+        </mat-panel-title>
+        <mat-panel-description *ngIf="filtrosAtivos">
+          Filtros ativos • Clique para expandir/recolher
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="filtros-container">
+        <!-- Busca Geral -->
+        <mat-form-field appearance="outline" class="filtro-field">
+          <mat-label>Buscar em todos os campos</mat-label>
+          <input matInput [(ngModel)]="filtroBusca" 
+                 (ngModelChange)="aplicarFiltros()"
+                 placeholder="Digite código, descrição, processo...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <div class="filtros-linha">
+          <!-- Filtro por Tipo -->
+          <mat-form-field appearance="outline" class="filtro-field">
+            <mat-label>Tipo</mat-label>
+            <mat-select [(ngModel)]="filtroTipo" (selectionChange)="aplicarFiltros()">
+              <mat-option *ngFor="let tipo of tipos" [value]="tipo">
+                {{ tipo === 'TODOS' ? 'Todos os tipos' : tipo }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>category</mat-icon>
+          </mat-form-field>
+
+          <!-- Filtro por Órgão -->
+          <mat-form-field appearance="outline" class="filtro-field">
+            <mat-label>Órgão Responsável</mat-label>
+            <mat-select [(ngModel)]="filtroOrgao" (selectionChange)="aplicarFiltros()">
+              <mat-option *ngFor="let orgao of orgaosUnicos" [value]="orgao">
+                {{ orgao === 'TODOS' ? 'Todos os órgãos' : orgao }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>account_balance</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="filtros-linha">
+          <!-- Filtro por Valor Mínimo -->
+          <mat-form-field appearance="outline" class="filtro-field">
+            <mat-label>Valor Mínimo (R$)</mat-label>
+            <input matInput type="number" [(ngModel)]="filtroValorMin" 
+                   (ngModelChange)="aplicarFiltros()"
+                   placeholder="0,00" step="0.01" min="0">
+            <mat-icon matPrefix>arrow_upward</mat-icon>
+            <span matPrefix>R$&nbsp;</span>
+          </mat-form-field>
+
+          <!-- Filtro por Valor Máximo -->
+          <mat-form-field appearance="outline" class="filtro-field">
+            <mat-label>Valor Máximo (R$)</mat-label>
+            <input matInput type="number" [(ngModel)]="filtroValorMax" 
+                   (ngModelChange)="aplicarFiltros()"
+                   placeholder="9.999.999,99" step="0.01" min="0">
+            <mat-icon matPrefix>arrow_downward</mat-icon>
+            <span matPrefix>R$&nbsp;</span>
+          </mat-form-field>
+        </div>
+
+        <!-- Botões de Ação dos Filtros -->
+        <div class="filtros-actions">
+          <button mat-stroked-button color="warn" (click)="limparFiltros()" 
+                  [disabled]="!filtrosAtivos">
+            <mat-icon>clear_all</mat-icon>
+            Limpar Filtros
+          </button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <!-- Loading -->
+  <div *ngIf="carregando" class="loading-center">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="mat-body-1">Carregando itens...</p>
+  </div>
+
+  <!-- Tabela Desktop -->
+  <mat-card *ngIf="!carregando" class="desktop-card">
+    <mat-card-content>
+      <div class="table-container desktop-only" *ngIf="itensFiltrados.length > 0; else semItens">
+        <table mat-table [dataSource]="itensFiltrados" class="mat-elevation-z0">
+          
+          <!-- Coluna de Seleção -->
+          <ng-container matColumnDef="selecao">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox [checked]="selecionarTodos" 
+                           (change)="toggleSelecionarTodos()"
+                           [indeterminate]="quantidadeSelecionada > 0 && !selecionarTodos"
+                           aria-label="Selecionar todos">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let item">
+              <mat-checkbox [checked]="estaSelecionado(item.id!)"
+                           (change)="toggleSelecionarItem(item.id!)"
+                           aria-label="Selecionar item">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Código Column -->
+          <ng-container matColumnDef="codigo">
+            <th mat-header-cell *matHeaderCellDef>Código</th>
+            <td mat-cell *matCellDef="let item" class="codigo-cell">
+              <strong>{{item.codigo}}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Descrição Column -->
+          <ng-container matColumnDef="descricao">
+            <th mat-header-cell *matHeaderCellDef>Descrição</th>
+            <td mat-cell *matCellDef="let item" class="descricao-cell">
+              {{item.descricao}}
+            </td>
+          </ng-container>
+
+          <!-- Tipo Column -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [color]="getTipoColor(item.tipo)" selected>
+                {{item.tipo}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Valor Column -->
+          <ng-container matColumnDef="valor">
+            <th mat-header-cell *matHeaderCellDef>Valor Unitário</th>
+            <td mat-cell *matCellDef="let item">
+              {{formatarMoeda(item.valorUnitario)}}
+            </td>
+          </ng-container>
+
+          <!-- Quantidade Column -->
+          <ng-container matColumnDef="quantidade">
+            <th mat-header-cell *matHeaderCellDef>Qtd</th>
+            <td mat-cell *matCellDef="let item">
+              {{item.quantidade}}
+            </td>
+          </ng-container>
+
+          <!-- Órgão Column -->
+          <ng-container matColumnDef="orgao">
+            <th mat-header-cell *matHeaderCellDef>Órgão</th>
+            <td mat-cell *matCellDef="let item" class="orgao-cell">
+              {{item.orgaoResponsavel}}
+            </td>
+          </ng-container>
+
+          <!-- Data Column -->
+          <ng-container matColumnDef="data">
+            <th mat-header-cell *matHeaderCellDef>Data Cadastro</th>
+            <td mat-cell *matCellDef="let item">
+              {{formatarData(item.dataCadastro)}}
+            </td>
+          </ng-container>
+
+          <!-- Ações Column -->
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let item">
+              <button mat-icon-button color="primary" 
+                      [routerLink]="['/items', item.id, 'editar']"
+                      matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" 
+                      (click)="excluirItem(item.id!)"
+                      matTooltip="Excluir">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Cards Mobile -->
+      <div class="mobile-only" *ngIf="itensFiltrados.length > 0">
+        <div class="itens-mobile">
+          <mat-card *ngFor="let item of itensFiltrados" class="item-card-mobile">
+            
+            <mat-card-header>
+              <mat-card-title-group>
+                <mat-checkbox class="mobile-checkbox"
+                             [checked]="estaSelecionado(item.id!)"
+                             (change)="toggleSelecionarItem(item.id!)"
+                             aria-label="Selecionar item">
+                </mat-checkbox>
+                
+                <div class="mobile-header-info">
+                  <mat-card-title class="mobile-codigo">
+                    {{item.codigo}}
+                  </mat-card-title>
+                  <mat-card-subtitle>
+                    <mat-chip [color]="getTipoColor(item.tipo)" class="mobile-chip">
+                      {{item.tipo}}
+                    </mat-chip>
+                    • {{formatarData(item.dataCadastro)}}
+                  </mat-card-subtitle>
+                </div>
+              </mat-card-title-group>
+            </mat-card-header>
+
+            <mat-divider></mat-divider>
+
+            <mat-card-content>
+              <div class="mobile-content">
+                
+                <div class="mobile-row">
+                  <mat-icon class="mobile-icon">description</mat-icon>
+                  <div class="mobile-text descricao-mobile">
+                    {{item.descricao}}
+                  </div>
+                </div>
+                
+                <div class="mobile-row">
+                  <div class="mobile-col">
+                    <mat-icon class="mobile-icon">attach_money</mat-icon>
+                    <span class="mobile-label">Valor:</span>
+                    <strong class="mobile-value">{{formatarMoeda(item.valorUnitario)}}</strong>
+                  </div>
+                  <div class="mobile-col">
+                    <mat-icon class="mobile-icon">numbers</mat-icon>
+                    <span class="mobile-label">Qtd:</span>
+                    <strong class="mobile-value">{{item.quantidade}}</strong>
+                  </div>
+                </div>
+                
+                <div class="mobile-row">
+                  <mat-icon class="mobile-icon">account_balance</mat-icon>
+                  <div class="mobile-text">
+                    <span class="mobile-label">Órgão:</span>
+                    {{item.orgaoResponsavel}}
+                  </div>
+                </div>
+                
+                <div class="mobile-row">
+                  <mat-icon class="mobile-icon">gavel</mat-icon>
+                  <div class="mobile-text">
+                    <span class="mobile-label">Processo:</span>
+                    {{item.processo}}
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+              <button mat-icon-button color="primary" 
+                      [routerLink]="['/items', item.id, 'editar']"
+                      matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" 
+                      (click)="excluirItem(item.id!)"
+                      matTooltip="Excluir">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+
+      <ng-template #semItens>
+        <div class="sem-itens">
+          <mat-icon class="icon-large" *ngIf="!filtrosAtivos">inbox</mat-icon>
+          <mat-icon class="icon-large" *ngIf="filtrosAtivos">filter_alt_off</mat-icon>
+          
+          <h3 class="mat-h3" *ngIf="!filtrosAtivos">
+            Nenhum item cadastrado
+          </h3>
+          <h3 class="mat-h3" *ngIf="filtrosAtivos">
+            Nenhum item encontrado
+          </h3>
+          
+          <p class="mat-body-1" *ngIf="!filtrosAtivos">
+            Comece cadastrando um novo item
+          </p>
+          <p class="mat-body-1" *ngIf="filtrosAtivos">
+            Nenhum item corresponde aos filtros aplicados
+          </p>
+          
+          <button mat-raised-button color="primary" 
+                  *ngIf="!filtrosAtivos" 
+                  routerLink="/items/novo">
+            <mat-icon>add</mat-icon>
+            Cadastrar Primeiro Item
+          </button>
+          
+          <button mat-stroked-button 
+                  *ngIf="filtrosAtivos" 
+                  (click)="limparFiltros()">
+            <mat-icon>clear_all</mat-icon>
+            Limpar Filtros
+          </button>
+        </div>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>
